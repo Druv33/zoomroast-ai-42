@@ -1,6 +1,6 @@
 import React from 'react';
 import { Zap } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+
 
 interface HeaderProps {
   title?: string;
@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   profile,
   isSubscribed = false
 }) => {
-  const { t } = useLanguage();
+  
   
   return (
     <header className="safe-area-top px-6 py-4">

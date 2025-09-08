@@ -6,8 +6,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { CameraModal } from '@/components/ui/camera-modal';
 import { ImageViewer } from '@/components/ui/image-viewer';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { LanguageSelector } from '@/components/ui/language-selector';
 
 interface HomePageProps {
   isAuthenticated: boolean;
@@ -33,10 +31,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [roastData, setRoastData] = useState<{lines: string[], audioData: string[], captions?: any} | null>(null);
-  const [languageConfirmed, setLanguageConfirmed] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { language, t } = useLanguage();
+  
 
   const handleFileSelect = (file: File) => {
     if (file.type.startsWith('image/')) {
@@ -45,7 +43,6 @@ export const HomePage: React.FC<HomePageProps> = ({
         setSelectedImage(e.target?.result as string);
         // Clear previous roast data when new image is uploaded
         setRoastData(null);
-        setLanguageConfirmed(false);
         
         // Show upload notification if enabled
         const pushNotifications = localStorage.getItem('pushNotifications');
@@ -100,7 +97,6 @@ export const HomePage: React.FC<HomePageProps> = ({
     setSelectedImage(imageData);
     // Clear previous roast data when new image is captured
     setRoastData(null);
-    setLanguageConfirmed(false);
     setShowCameraModal(false);
     
     // Show upload notification if enabled
@@ -120,9 +116,9 @@ export const HomePage: React.FC<HomePageProps> = ({
         throw new Error('Please log in to use text-to-speech');
       }
 
-      // Add appropriate intro text based on language
+      // Add appropriate intro text for English only
       const introText = isFirstLine 
-        ? (language === 'english' ? t('introPhraseEnglish') : t('introPhraseHindi'))
+        ? "Alright, let's roast this one! Here we go... "
         : "";
       const fullText = introText + text;
       
@@ -132,7 +128,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         body: { 
           text: fullText, 
           voice: 'male',
-          language: language
+          language: 'english'
         },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -150,7 +146,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         console.log('Using browser TTS fallback for:', fullText);
         return new Promise((resolve) => {
           const utterance = new SpeechSynthesisUtterance(fullText);
-          utterance.lang = language === 'english' ? 'en-US' : 'hi-IN';
+          utterance.lang = 'en-US';
           utterance.rate = 0.9;
           utterance.pitch = 1.0;
           
@@ -188,7 +184,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               console.error('Audio playback error:', error);
             // Fallback to browser TTS
             const utterance = new SpeechSynthesisUtterance(fullText);
-            utterance.lang = language === 'english' ? 'en-US' : 'hi-IN';
+            utterance.lang = 'en-US';
             utterance.rate = 0.9;
               const estimatedDuration = Math.max(2000, fullText.length * 100);
               utterance.onend = () => resolve({ duration: estimatedDuration });
@@ -200,7 +196,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               console.error('Play failed:', playError);
             // Fallback to browser TTS
             const utterance = new SpeechSynthesisUtterance(fullText);
-            utterance.lang = language === 'english' ? 'en-US' : 'hi-IN';
+            utterance.lang = 'en-US';
             utterance.rate = 0.9;
               const estimatedDuration = Math.max(2000, fullText.length * 100);
               utterance.onend = () => resolve({ duration: estimatedDuration });
@@ -212,7 +208,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             console.error('Audio loading failed, using browser fallback');
             // Fallback to browser TTS
             const utterance = new SpeechSynthesisUtterance(fullText);
-            utterance.lang = language === 'english' ? 'en-US' : 'hi-IN';
+            utterance.lang = 'en-US';
             utterance.rate = 0.9;
             const estimatedDuration = Math.max(2000, fullText.length * 100);
             utterance.onend = () => resolve({ duration: estimatedDuration });
@@ -227,11 +223,11 @@ export const HomePage: React.FC<HomePageProps> = ({
       // Always fallback to browser TTS if there's any error
       return new Promise((resolve) => {
         const introText = isFirstLine 
-          ? (language === 'english' ? t('introPhraseEnglish') : t('introPhraseHindi'))
+          ? "Alright, let's roast this one! Here we go... "
           : "";
         const fullText = introText + text;
         const utterance = new SpeechSynthesisUtterance(fullText);
-        utterance.lang = language === 'english' ? 'en-US' : 'hi-IN';
+        utterance.lang = 'en-US';
         utterance.rate = 0.9;
         utterance.pitch = 1.0;
         
@@ -292,11 +288,11 @@ export const HomePage: React.FC<HomePageProps> = ({
       
       let roastResponse;
       try {
-        console.log('Sending language to backend:', language);
+        console.log('Sending language to backend: english');
         roastResponse = await supabase.functions.invoke('generate-roast', {
           body: { 
             imageBase64: selectedImage,
-            language: language,
+            language: 'english',
             seed: randomSeed,
             timestamp: timestamp,
             requestId: `${timestamp}_${randomSeed}`
@@ -336,7 +332,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           const voice = index % 2 === 0 ? 'male' : 'female';
           
           return supabase.functions.invoke('generate-tts', {
-            body: { text: line, voice: voice, language: language },
+            body: { text: line, voice: voice, language: 'english' },
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
@@ -390,8 +386,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       if ((pushNotifications === null || pushNotifications === 'true') && 
           (roastCompleted === null || roastCompleted === 'true')) {
         toast({
-          title: t('roastReady'),
-          description: `${t('roastGenerated')}`,
+          title: 'Your roast is ready!',
+          description: 'Generated epic roast lines! Enjoy the burn!',
         });
       }
 
@@ -587,21 +583,13 @@ export const HomePage: React.FC<HomePageProps> = ({
           </GlassCardContent>
         </GlassCard>
 
-        {/* Language Selector - Only show when image is selected */}
-        {selectedImage && (
-          <div className="flex flex-col space-y-2">
-            <div className="flex justify-center">
-              <LanguageSelector onChange={() => setLanguageConfirmed(true)} />
-            </div>
-          </div>
-        )}
 
         {/* Generate Button */}
         <GlassButton
           variant={selectedImage ? "premium" : "default"}
           size="xl"
           onClick={handleGenerateRoast}
-          disabled={!selectedImage || isGenerating || !languageConfirmed}
+          disabled={!selectedImage || isGenerating}
           className="w-full relative overflow-hidden"
         >
           <div className="flex items-center space-x-3">
