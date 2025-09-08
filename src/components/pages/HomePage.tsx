@@ -292,6 +292,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       
       let roastResponse;
       try {
+        console.log('Sending language to backend:', language);
         roastResponse = await supabase.functions.invoke('generate-roast', {
           body: { 
             imageBase64: selectedImage,

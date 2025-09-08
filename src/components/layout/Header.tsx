@@ -28,14 +28,14 @@ export const Header: React.FC<HeaderProps> = ({
               <Zap className="w-5 h-5 text-neon-primary" />
             </div>
           )}
-          <h1 className="text-xl font-semibold text-foreground">{t('appName')}</h1>
+          <h1 className="text-xl font-semibold text-foreground">SnapRoast</h1>
         </div>
         
         <div className="flex items-center space-x-3">
           {/* Credits Display */}
           {profile && !isSubscribed && (
             <div className="glass-surface rounded-lg px-3 py-1">
-              <div className="text-xs text-muted-foreground">{t('credits')}</div>
+              <div className="text-xs text-muted-foreground">Credits</div>
               <div className="text-sm font-semibold text-neon-primary">
                 {Math.max(0, 1 - (profile.roasts_generated || 0))} / 1
               </div>

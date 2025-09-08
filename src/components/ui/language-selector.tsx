@@ -22,17 +22,19 @@ export const LanguageSelector: React.FC<{ onChange?: (lang: Language) => void }>
     <GlassButton
       onClick={toggleLanguage}
       onMouseEnter={playHover}
-      className="h-12 px-6 min-w-[140px] bg-gradient-to-r from-hsl(var(--neon-primary)) to-hsl(var(--neon-secondary)) 
-                 hover:from-hsl(var(--neon-secondary)) hover:to-hsl(var(--neon-tertiary)) 
-                 text-white font-semibold shadow-lg hover:shadow-xl transform transition-all duration-300 
-                 hover:scale-105 active:scale-95 neon-glow"
+      className="h-11 px-5 min-w-[130px] bg-black/20 backdrop-blur-md border border-white/10 
+                 hover:bg-white/5 text-white font-medium shadow-lg hover:shadow-xl 
+                 transition-all duration-300 hover:scale-[1.02] active:scale-95
+                 rounded-xl group relative overflow-hidden"
       aria-label={`Switch language (current: ${label})`}
       title={`Switch language (current: ${label})`}
     >
-      <Globe className="h-5 w-5 mr-2 drop-shadow-sm" />
-      <span className="text-sm font-semibold flex items-center gap-2 drop-shadow-sm">
-        <span className="text-lg">{flag}</span>
-        <span>{label}</span>
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent 
+                      translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+      <Globe className="h-4 w-4 mr-2 opacity-80" />
+      <span className="text-sm font-medium flex items-center gap-2 relative z-10">
+        <span className="text-base">{flag}</span>
+        <span className="tracking-wide">{label}</span>
       </span>
     </GlassButton>
   );
