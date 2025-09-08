@@ -1,0 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Anton:wght@400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+/* SnapRoast Design System - Glass Morphism Mobile-First */
+
+@layer base {
+  :root {
+    /* Core Background System */
+    --background: 220 13% 4%;
+    --foreground: 210 40% 98%;
+    --surface: 220 13% 8%;
+    --surface-elevated: 220 13% 12%;
+
+    /* Glass Morphism System */
+    --glass-primary: 210 40% 98% / 0.03;
+    --glass-secondary: 210 40% 98% / 0.06;
+    --glass-tertiary: 210 40% 98% / 0.08;
+    --glass-border: 210 40% 98% / 0.08;
+    --glass-border-strong: 210 40% 98% / 0.12;
+
+    /* Neon Accent System */
+    --neon-primary: 267 89% 68%;
+    --neon-secondary: 290 91% 73%;
+    --neon-tertiary: 174 72% 56%;
+    --neon-glow: 267 89% 68% / 0.3;
+    --neon-glow-strong: 267 89% 68% / 0.5;
+
+    /* Semantic Colors */
+    --primary: 267 89% 68%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 220 13% 12%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 290 91% 73%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --muted: 220 13% 16%;
+    --muted-foreground: 217 10% 64%;
+
+    /* Interactive States */
+    --hover-glass: 210 40% 98% / 0.1;
+    --active-glass: 210 40% 98% / 0.15;
+    
+    /* Borders & Inputs */
+    --border: 220 13% 20%;
+    --input: 220 13% 16%;
+    --ring: 267 89% 68%;
+
+    /* Radius System */
+    --radius: 1rem;
+    --radius-sm: 0.75rem;
+    --radius-lg: 1.5rem;
+    --radius-xl: 2rem;
+
+    /* Shadows & Effects */
+    --shadow-glass: 0 8px 32px hsl(220 13% 4% / 0.6);
+    --shadow-neon: 0 0 40px hsl(var(--neon-glow));
+    --shadow-neon-strong: 0 0 60px hsl(var(--neon-glow-strong));
+    
+    /* Backdrop Blur */
+    --blur-sm: blur(8px);
+    --blur-md: blur(12px);
+    --blur-lg: blur(16px);
+    --blur-xl: blur(20px);
+
+    /* Animation Curves */
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-smooth: cubic-bezier(0.22, 0.9, 0.32, 1);
+    --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background: linear-gradient(135deg, hsl(220 13% 4%) 0%, hsl(220 13% 6%) 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Roast Text Font */
+  .roast-text {
+    font-family: 'Anton', 'Impact', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* Glass Morphism Base Classes */
+  .glass-surface {
+    background: hsl(var(--glass-primary));
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-strong {
+    background: hsl(var(--glass-secondary));
+    backdrop-filter: var(--blur-lg);
+    -webkit-backdrop-filter: var(--blur-lg);
+    border: 1px solid hsl(var(--glass-border-strong));
+    box-shadow: var(--shadow-glass);
+  }
+
+  /* Neon Glow Effects */
+  .neon-glow {
+    box-shadow: 0 0 20px hsl(var(--neon-glow)), var(--shadow-glass);
+  }
+
+  .neon-glow-strong {
+    box-shadow: 0 0 40px hsl(var(--neon-glow-strong)), var(--shadow-glass);
+  }
+
+  /* Shimmer Animation */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--glass-tertiary)) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Logo Pulse Animation */
+  .logo-pulse {
+    animation: logo-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes logo-pulse {
+    0%, 100% { 
+      transform: scale(1);
+      filter: drop-shadow(0 0 20px hsl(var(--neon-glow)));
+    }
+    50% { 
+      transform: scale(1.06);
+      filter: drop-shadow(0 0 40px hsl(var(--neon-glow-strong)));
+    }
+  }
+
+  /* Bounce In Animation */
+  .bounce-in {
+    animation: bounce-in 0.6s var(--ease-bounce) forwards;
+  }
+
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: translateY(60vh) scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-10px) scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Slide Up Animation */
+  .slide-up {
+    animation: slide-up 0.4s var(--ease-smooth) forwards;
+  }
+
+  @keyframes slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(60vh);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger Animation for Nav Items */
+  .stagger-in {
+    animation: stagger-in 0.5s var(--ease-glass) forwards;
+  }
+
+  @keyframes stagger-in {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  /* Interactive Hover States */
+  .glass-hover {
+    transition: all 0.3s var(--ease-glass);
+  }
+
+  .glass-hover:hover {
+    background: hsl(var(--hover-glass));
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 40px hsl(220 13% 4% / 0.8), var(--shadow-neon);
+  }
+
+  .glass-hover:active {
+    background: hsl(var(--active-glass));
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Safe Area Support for Mobile */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--surface));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--glass-border));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--glass-border-strong));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
