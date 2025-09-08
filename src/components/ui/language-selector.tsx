@@ -15,7 +15,7 @@ export const LanguageSelector: React.FC<{ onChange?: (lang: Language) => void }>
     onChange?.(next);
   };
 
-  const label = language === 'english' ? t('englishLang') : t('hindiLang');
+  const label = language === 'english' ? 'English' : 'Hindi';
   const flag = language === 'english' ? '🇺🇸' : '🇮🇳';
 
   return (

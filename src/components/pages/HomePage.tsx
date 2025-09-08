@@ -51,8 +51,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         const pushNotifications = localStorage.getItem('pushNotifications');
         if (pushNotifications === null || pushNotifications === 'true') {
           toast({
-            title: t('uploadSuccess'),
-            description: t('photoReady'),
+            title: 'Image uploaded successfully!',
+            description: 'Your photo is ready for roasting. Hit Generate to create your roast!',
           });
         }
       };
@@ -107,8 +107,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     const pushNotifications = localStorage.getItem('pushNotifications');
     if (pushNotifications === null || pushNotifications === 'true') {
       toast({
-        title: t('uploadSuccess'),
-        description: t('photoReady'),
+        title: 'Image uploaded successfully!',
+        description: 'Your photo is ready for roasting. Hit Generate to create your roast!',
       });
     }
   };
@@ -567,7 +567,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       className="w-full flex items-center justify-center space-x-3"
                     >
                       <Upload className="w-5 h-5" />
-                      <span>{t('uploadImage')}</span>
+                      <span>Upload Image</span>
                     </GlassButton>
                     
                     <GlassButton
@@ -577,7 +577,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       className="w-full flex items-center justify-center space-x-3"
                     >
                       <Camera className="w-5 h-5" />
-                      <span>{t('takePhoto')}</span>
+                      <span>Take Photo</span>
                     </GlassButton>
                   </div>
                 </div>
@@ -606,7 +606,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div className="flex items-center space-x-3">
             <Zap className={`w-6 h-6 ${isGenerating ? 'animate-pulse' : ''}`} />
             <span className="font-semibold">
-              {isGenerating ? t('generating') : t('generateRoast')}
+              {isGenerating ? 'Generating...' : 'Generate Roast'}
             </span>
           </div>
           {isGenerating && (
@@ -623,7 +623,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             className="w-full flex items-center space-x-3"
           >
             <Download className="w-5 h-5" />
-            <span className="font-semibold">{t('downloadRoast')}</span>
+            <span className="font-semibold">Download Roast</span>
           </GlassButton>
         )}
 
