@@ -28,18 +28,13 @@ export const DownloadHistoryPage: React.FC<DownloadHistoryPageProps> = ({ onBack
 
   const fetchRoasts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('roasts')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setRoasts(data || []);
+      // No roasts functionality anymore - return empty array
+      setRoasts([]);
     } catch (error) {
-      console.error('Error fetching roasts:', error);
+      console.error('Error fetching data:', error);
       toast({
         title: "Error",
-        description: "Failed to load download history",
+        description: "Failed to load history",
         variant: "destructive",
       });
     } finally {

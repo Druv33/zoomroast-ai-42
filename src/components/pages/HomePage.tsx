@@ -353,23 +353,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         // Continue without audio - don't block the roast display
       }
 
-      // Save roast to history
-      try {
-        const { error: saveError } = await supabase
-          .from('roasts')
-          .insert({
-            roast_lines: roast.lines,
-            image_url: imageUrl,
-            status: 'completed',
-            user_id: session.user.id
-          });
-
-        if (saveError) {
-          console.error('Error saving roast to history:', saveError);
-        }
-      } catch (saveError) {
-        console.error('Error saving roast to history:', saveError);
-      }
+      // Skip saving to history - roasts functionality removed
 
       // Don't add intro text here - it's handled in TTS
 
