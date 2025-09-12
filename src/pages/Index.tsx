@@ -6,11 +6,14 @@ import { BottomNavigation } from '@/components/layout/BottomNavigation';
 import { HomePage } from '@/components/pages/HomePage';
 import { SubscriptionPage } from '@/components/pages/SubscriptionPage';
 import { AccountPage } from '@/components/pages/AccountPage';
-import { DownloadHistoryPage } from '@/components/pages/DownloadHistoryPage';
-import { SettingsPage } from '@/components/pages/SettingsPage';
-import { SupportPage } from '@/components/pages/SupportPage';
+import { FashionPage } from '@/components/pages/FashionPage';
+import { BeautyPage } from '@/components/pages/BeautyPage';
+import { HomeDecorPage } from '@/components/pages/HomeDecorPage';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { SubscriptionModal } from '@/components/auth/SubscriptionModal';
+import { useToast } from '@/hooks/use-toast';
+
+type PageType = 'home' | 'subscription' | 'login' | 'fashion' | 'beauty' | 'home-decor';
 
 const AppContent = () => {
   const {
@@ -21,15 +24,33 @@ const AppContent = () => {
     loading,
     signInWithGoogle,
     signOut,
-    subscribe,
     refreshProfile
   } = useAuth();
+  
   const [showSplash, setShowSplash] = useState(true);
-  const [currentPage, setCurrentPage] = useState<'home' | 'subscription' | 'account' | 'download-history' | 'settings' | 'support'>('home');
+  const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [credits, setCredits] = useState(1); // Free user gets 1 credit
+  const { toast } = useToast();
 
-  // Prevent repeated auth modal triggers
+  // Calculate credits based on subscription status
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (isSubscribed) {
+        setCredits(999); // Unlimited credits for subscribed users
+      } else {
+        // Free users get 1 credit, check if they've used it
+        const usedFeatures = localStorage.getItem('usedFeatures');
+        if (usedFeatures) {
+          setCredits(0);
+        } else {
+          setCredits(1);
+        }
+      }
+    }
+  }, [isAuthenticated, isSubscribed]);
+
   const handleAuthRequired = () => {
     if (!showAuthModal && !isAuthenticated) {
       setShowAuthModal(true);
@@ -39,6 +60,62 @@ const AppContent = () => {
   const handleSubscriptionRequired = () => {
     if (!showSubscriptionModal && !isSubscribed) {
       setShowSubscriptionModal(true);
+    }
+  };
+
+  const handleFeatureSelect = (feature: 'fashion' | 'beauty' | 'home-decor') => {
+    if (!isAuthenticated) {
+      handleAuthRequired();
+      return;
+    }
+
+    // Check if user has credits
+    if (!isSubscribed && credits <= 0) {
+      toast({
+        title: "No credits remaining",
+        description: "Upgrade to Premium for unlimited access to all features",
+        variant: "destructive"
+      });
+      handleSubscriptionRequired();
+      return;
+    }
+
+    // Use a credit for free users
+    if (!isSubscribed) {
+      setCredits(prev => prev - 1);
+      localStorage.setItem('usedFeatures', 'true');
+    }
+
+    setCurrentPage(feature);
+  };
+
+  const handlePageChange = (page: 'home' | 'subscription' | 'login') => {
+    if (page === 'login' && isAuthenticated) {
+      // If already authenticated, show account page instead
+      setCurrentPage('login');
+    } else {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleBackToHome = () => {
+    setCurrentPage('home');
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      setShowAuthModal(false);
+      toast({
+        title: "Welcome to StyleAI!",
+        description: "You're now logged in and ready to explore AI-powered styling features.",
+      });
+    } catch (error) {
+      toast({
+        title: "Sign-in failed",
+        description: "Please try again",
+        variant: "destructive"
+      });
     }
   };
 
@@ -69,6 +146,8 @@ const AppContent = () => {
         ) : (
           <>
             <Header 
+              credits={credits}
+              maxCredits={isSubscribed ? 999 : 1}
               profile={profile || undefined}
               isSubscribed={isSubscribed}
             />
@@ -82,10 +161,8 @@ const AppContent = () => {
                   onAuthRequired={handleAuthRequired}
                   onSubscriptionRequired={handleSubscriptionRequired}
                   profile={profile || undefined}
-                  onProfileRefresh={() => {
-                    // Refresh profile data to update credits
-                    refreshProfile();
-                  }}
+                  onProfileRefresh={refreshProfile}
+                  onFeatureSelect={handleFeatureSelect}
                 />
               )}
               
@@ -93,7 +170,7 @@ const AppContent = () => {
                 <SubscriptionPage />
               )}
               
-              {currentPage === 'account' && (
+              {currentPage === 'login' && (
                 <AccountPage
                   user={user ? {
                     name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
@@ -104,28 +181,31 @@ const AppContent = () => {
                   isSubscribed={isSubscribed}
                   onLogin={handleAuthRequired}
                   onLogout={signOut}
-                  onShowDownloadHistory={() => setCurrentPage('download-history')}
-                  onShowSettings={() => setCurrentPage('settings')}
-                  onShowSupport={() => setCurrentPage('support')}
+                  onShowDownloadHistory={() => {}}
+                  onShowSettings={() => {}}
+                  onShowSupport={() => {}}
                 />
               )}
 
-              {currentPage === 'download-history' && (
-                <DownloadHistoryPage onBack={() => setCurrentPage('account')} />
+              {currentPage === 'fashion' && (
+                <FashionPage onBack={handleBackToHome} />
               )}
 
-              {currentPage === 'settings' && (
-                <SettingsPage onBack={() => setCurrentPage('account')} />
+              {currentPage === 'beauty' && (
+                <BeautyPage onBack={handleBackToHome} />
               )}
 
-              {currentPage === 'support' && (
-                <SupportPage onBack={() => setCurrentPage('account')} />
+              {currentPage === 'home-decor' && (
+                <HomeDecorPage onBack={handleBackToHome} />
               )}
             </main>
 
             <BottomNavigation 
-              currentPage={currentPage === 'download-history' || currentPage === 'settings' || currentPage === 'support' ? 'account' : currentPage}
-              onPageChange={(page) => setCurrentPage(page)}
+              currentPage={currentPage === 'fashion' || currentPage === 'beauty' || currentPage === 'home-decor' 
+                ? 'home' 
+                : currentPage}
+              onPageChange={handlePageChange}
+              isAuthenticated={isAuthenticated}
               user={user}
             />
 
@@ -133,7 +213,7 @@ const AppContent = () => {
             <AuthModal
               isOpen={showAuthModal}
               onClose={() => setShowAuthModal(false)}
-              onGoogleSignIn={signInWithGoogle}
+              onGoogleSignIn={handleGoogleSignIn}
               loading={loading}
             />
 

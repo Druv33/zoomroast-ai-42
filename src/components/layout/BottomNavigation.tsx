@@ -1,29 +1,27 @@
 import React from 'react';
-import { Home, CreditCard, User } from 'lucide-react';
+import { Home, CreditCard, LogIn } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useSound } from '@/hooks/useSound';
 
 interface BottomNavigationProps {
-  currentPage: 'home' | 'subscription' | 'account';
-  onPageChange: (page: 'home' | 'subscription' | 'account') => void;
+  currentPage: 'home' | 'subscription' | 'login';
+  onPageChange: (page: 'home' | 'subscription' | 'login') => void;
+  isAuthenticated?: boolean;
   user?: any;
 }
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   currentPage,
   onPageChange,
+  isAuthenticated,
   user
 }) => {
-  const { playClick } = useSound();
-  
   const tabs = [
     { id: 'home' as const, icon: Home, label: 'Home' },
-    { id: 'subscription' as const, icon: CreditCard, label: 'Premium' },
-    { id: 'account' as const, icon: User, label: 'Account' }
+    { id: 'subscription' as const, icon: CreditCard, label: 'Plans' },
+    { id: 'login' as const, icon: LogIn, label: isAuthenticated ? 'Account' : 'Login' }
   ];
 
-  const handleTabClick = (tabId: 'home' | 'subscription' | 'account') => {
-    playClick();
+  const handleTabClick = (tabId: 'home' | 'subscription' | 'login') => {
     onPageChange(tabId);
   };
 
@@ -53,7 +51,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
                   "flex items-center justify-center w-full h-full rounded-xl transition-all duration-300",
                   isActive ? "text-neon-primary" : "text-muted-foreground"
                 )}>
-                  {tab.id === 'account' && user?.user_metadata?.avatar_url ? (
+                  {tab.id === 'login' && isAuthenticated && user?.user_metadata?.avatar_url ? (
                     <img 
                       src={user.user_metadata.avatar_url} 
                       alt="Profile" 
