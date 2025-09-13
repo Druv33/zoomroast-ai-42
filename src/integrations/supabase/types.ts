@@ -180,6 +180,39 @@ export type Database = {
           },
         ]
       }
+      roasts: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          roast_lines: string[]
+          status: string
+          updated_at: string
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          roast_lines?: string[]
+          status?: string
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          roast_lines?: string[]
+          status?: string
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       room_participants: {
         Row: {
           id: string
