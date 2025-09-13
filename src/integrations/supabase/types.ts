@@ -14,78 +14,432 @@ export type Database = {
   }
   public: {
     Tables: {
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          room_id: string
+          thread_id: string | null
+          timestamp_sec: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          room_id: string
+          thread_id?: string | null
+          timestamp_sec?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          room_id?: string
+          thread_id?: string | null
+          timestamp_sec?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pins: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          room_id: string
+          timestamp_sec: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          room_id: string
+          timestamp_sec: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          room_id?: string
+          timestamp_sec?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pins_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
-          display_name: string | null
-          downloads_count: number | null
-          email: string | null
+          email: string
+          full_name: string | null
           id: string
-          roasts_generated: number | null
-          subscription_active: boolean | null
-          subscription_expires_at: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
-          display_name?: string | null
-          downloads_count?: number | null
-          email?: string | null
+          email: string
+          full_name?: string | null
           id?: string
-          roasts_generated?: number | null
-          subscription_active?: boolean | null
-          subscription_expires_at?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
-          display_name?: string | null
-          downloads_count?: number | null
-          email?: string | null
+          email?: string
+          full_name?: string | null
           id?: string
-          roasts_generated?: number | null
-          subscription_active?: boolean | null
-          subscription_expires_at?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
-      roasts: {
+      reactions: {
         Row: {
           created_at: string
+          emoji: string
           id: string
-          image_url: string | null
-          roast_lines: string[] | null
-          status: string | null
-          thumbnail_url: string | null
+          room_id: string
+          timestamp_sec: number | null
           user_id: string
-          video_url: string | null
         }
         Insert: {
           created_at?: string
+          emoji: string
           id?: string
-          image_url?: string | null
-          roast_lines?: string[] | null
-          status?: string | null
-          thumbnail_url?: string | null
+          room_id: string
+          timestamp_sec?: number | null
           user_id: string
-          video_url?: string | null
         }
         Update: {
           created_at?: string
+          emoji?: string
+          id?: string
+          room_id?: string
+          timestamp_sec?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          left_at: string | null
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_participants_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          created_at: string
+          current_time_sec: number | null
+          host_id: string
+          id: string
+          is_playing: boolean | null
+          name: string
+          updated_at: string
+          video_id: string | null
+          video_title: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_time_sec?: number | null
+          host_id: string
+          id?: string
+          is_playing?: boolean | null
+          name: string
+          updated_at?: string
+          video_id?: string | null
+          video_title?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_time_sec?: number | null
+          host_id?: string
+          id?: string
+          is_playing?: boolean | null
+          name?: string
+          updated_at?: string
+          video_id?: string | null
+          video_title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_host_id_fkey"
+            columns: ["host_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_channels: {
+        Row: {
+          avatar_color: string | null
+          avg_views: number
+          category: string
+          channel_id: string
+          channel_logo: string | null
+          channel_name: string
+          channel_url: string
+          country: string
+          engagement: number
+          id: string
+          language: string
+          saved_at: string
+          subscribers: number
+          user_id: string
+          videos: Json | null
+        }
+        Insert: {
+          avatar_color?: string | null
+          avg_views?: number
+          category: string
+          channel_id: string
+          channel_logo?: string | null
+          channel_name: string
+          channel_url: string
+          country: string
+          engagement?: number
+          id?: string
+          language: string
+          saved_at?: string
+          subscribers?: number
+          user_id: string
+          videos?: Json | null
+        }
+        Update: {
+          avatar_color?: string | null
+          avg_views?: number
+          category?: string
+          channel_id?: string
+          channel_logo?: string | null
+          channel_name?: string
+          channel_url?: string
+          country?: string
+          engagement?: number
+          id?: string
+          language?: string
+          saved_at?: string
+          subscribers?: number
+          user_id?: string
+          videos?: Json | null
+        }
+        Relationships: []
+      }
+      snapaura_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          credits: number
+          email: string
+          full_name: string | null
+          id: string
+          max_credits: number
+          plan: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          credits?: number
+          email: string
+          full_name?: string | null
+          id?: string
+          max_credits?: number
+          plan?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          credits?: number
+          email?: string
+          full_name?: string | null
+          id?: string
+          max_credits?: number
+          plan?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      snapaura_usage_history: {
+        Row: {
+          created_at: string
+          credits_used: number
+          feature_type: string
+          id: string
+          image_url: string | null
+          result_url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_used?: number
+          feature_type: string
           id?: string
           image_url?: string | null
-          roast_lines?: string[] | null
-          status?: string | null
-          thumbnail_url?: string | null
+          result_url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_used?: number
+          feature_type?: string
+          id?: string
+          image_url?: string | null
+          result_url?: string | null
           user_id?: string
-          video_url?: string | null
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          stripe_customer_id: string | null
+          subscribed: boolean
+          subscription_end: string | null
+          subscription_tier: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          stripe_customer_id?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          stripe_customer_id?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
@@ -94,7 +448,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_cursor_api_key: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      is_active_participant: {
+        Args: { _room_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
