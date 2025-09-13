@@ -12,10 +12,10 @@ export const SubscriptionPage: React.FC = () => {
   const { isSubscribed, subscribe, manageSubscription, profile } = useAuth();
 
   const getFeatures = (plan: 'monthly' | 'yearly') => [
-    plan === 'yearly' ? 'Unlimited roasts' : '49 roasts per month',
-    'HD video downloads (1080p)',
-    'Custom roast styles',
-    'Early access to features'
+    'Unlimited form explanations',
+    'AI text + voice guide for form filling',
+    'Real-time chat support',
+    'Faster processing'
   ];
 
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
@@ -56,14 +56,14 @@ export const SubscriptionPage: React.FC = () => {
               </div>
               <GlassCardTitle className="text-neon-primary">Premium Active</GlassCardTitle>
               <p className="text-muted-foreground">
-                You're all set with unlimited roasts!
+                You're all set with unlimited form explanations!
               </p>
             </GlassCardHeader>
             <GlassCardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="glass-surface rounded-lg p-4">
                   <div className="text-2xl font-bold text-neon-primary">∞</div>
-                  <div className="text-muted-foreground">Unlimited Roasts</div>
+                  <div className="text-muted-foreground">Unlimited Forms</div>
                 </div>
                 <div className="glass-surface rounded-lg p-4">
                   <div className="text-2xl font-bold text-neon-secondary">HD</div>
@@ -95,7 +95,7 @@ export const SubscriptionPage: React.FC = () => {
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Go Premium</h1>
           <p className="text-muted-foreground">
-            Unlock unlimited roasts and premium features
+            Unlock unlimited form explanations and premium features
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export const SubscriptionPage: React.FC = () => {
               }`}
             >
               <div className="font-semibold">Monthly</div>
-              <div className="text-2xl font-bold">$3</div>
+              <div className="text-2xl font-bold">$5</div>
               <div className="text-sm opacity-75">per month</div>
             </button>
             
@@ -127,7 +127,7 @@ export const SubscriptionPage: React.FC = () => {
                 Save 16%
               </div>
               <div className="font-semibold">Yearly</div>
-              <div className="text-2xl font-bold">$30</div>
+              <div className="text-2xl font-bold">$50</div>
               <div className="text-sm opacity-75">per year</div>
             </button>
           </div>
@@ -162,7 +162,7 @@ export const SubscriptionPage: React.FC = () => {
           <div className="flex items-center space-x-3">
             <Zap className={`w-6 h-6 ${isLoading ? 'animate-pulse' : ''}`} />
             <span className="font-semibold">
-              {isLoading ? 'Processing...' : `Start Premium - ${selectedPlan === 'monthly' ? '$3/mo' : '$30/yr'}`}
+              {isLoading ? 'Processing...' : `Start Premium - ${selectedPlan === 'monthly' ? '$5/mo' : '$50/yr'}`}
             </span>
           </div>
           {isLoading && (

@@ -10,7 +10,7 @@ interface AccountPageProps {
     avatar?: string;
   };
   profile?: {
-    roasts_generated?: number;
+    forms_generated?: number;
     downloads_count?: number;
   };
   isSubscribed: boolean;
@@ -65,7 +65,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({
     {
       icon: Download,
       label: 'Download History',
-      description: 'View your generated roasts',
+      description: 'View your generated form guides',
       onClick: onShowDownloadHistory
     },
     {
@@ -126,8 +126,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({
             {/* Stats & Credits */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="glass-surface rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-neon-primary">{profile?.roasts_generated || 0}</div>
-                <div className="text-xs text-muted-foreground">Roasts Generated</div>
+                <div className="text-2xl font-bold text-neon-primary">{profile?.forms_generated || 0}</div>
+                <div className="text-xs text-muted-foreground">Forms Generated</div>
               </div>
               <div className="glass-surface rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-neon-secondary">{profile?.downloads_count || 0}</div>
@@ -141,19 +141,19 @@ export const AccountPage: React.FC<AccountPageProps> = ({
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium text-foreground">Free Trial Credits</div>
-                    <div className="text-sm text-muted-foreground">Remaining roasts</div>
+                    <div className="text-sm text-muted-foreground">Remaining forms</div>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-neon-primary">
-                      {Math.max(0, 1 - (profile?.roasts_generated || 0))}
+                      {Math.max(0, 1 - (profile?.forms_generated || 0))}
                     </div>
                     <div className="text-xs text-muted-foreground">/ 1 free</div>
                   </div>
                 </div>
-                {(profile?.roasts_generated || 0) >= 1 && (
+                {(profile?.forms_generated || 0) >= 1 && (
                   <div className="mt-3 text-center">
                     <p className="text-sm text-amber-600 dark:text-amber-400">
-                      Free trial completed! Upgrade to Premium for 49 monthly roasts.
+                      Free trial completed! Upgrade to Premium for unlimited form explanations.
                     </p>
                   </div>
                 )}
@@ -199,8 +199,8 @@ export const AccountPage: React.FC<AccountPageProps> = ({
 
         {/* App Info */}
         <div className="text-center text-xs text-muted-foreground pt-4">
-          <p>SnapRoast v1.0.0</p>
-          <p>Made with ❤️ for Gen Z</p>
+          <p>FormWise v1.0.0</p>
+          <p>Made with ❤️ for form filling</p>
         </div>
       </div>
     </div>

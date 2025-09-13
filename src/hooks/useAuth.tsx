@@ -9,7 +9,7 @@ interface Profile {
   display_name?: string;
   avatar_url?: string;
   email?: string;
-  roasts_generated?: number;
+  forms_generated?: number;
   downloads_count?: number;
   subscription_active?: boolean;
   subscription_expires_at?: string;

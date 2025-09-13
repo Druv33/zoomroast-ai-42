@@ -13,7 +13,7 @@ interface HomePageProps {
   onAuthRequired: () => void;
   onSubscriptionRequired: () => void;
   profile?: {
-    roasts_generated?: number;
+    forms_generated?: number;
   };
   onProfileRefresh?: () => void;
 }
@@ -30,7 +30,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCameraModal, setShowCameraModal] = useState(false);
-  const [roastData, setRoastData] = useState<{lines: string[], audioData: string[], captions?: any} | null>(null);
+  const [formData, setFormData] = useState<{lines: string[], audioData: string[], captions?: any} | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -41,15 +41,15 @@ export const HomePage: React.FC<HomePageProps> = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
-        // Clear previous roast data when new image is uploaded
-        setRoastData(null);
+        // Clear previous form data when new image is uploaded
+        setFormData(null);
         
         // Show upload notification if enabled
         const pushNotifications = localStorage.getItem('pushNotifications');
         if (pushNotifications === null || pushNotifications === 'true') {
           toast({
             title: 'Image uploaded successfully!',
-            description: 'Your photo is ready for roasting. Hit Generate to create your roast!',
+            description: 'Your form is ready for analysis. Hit Generate to create your form guide!',
           });
         }
       };
@@ -95,17 +95,17 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   const handleCameraPhotoCapture = (imageData: string) => {
     setSelectedImage(imageData);
-    // Clear previous roast data when new image is captured
-    setRoastData(null);
+    // Clear previous form data when new image is captured
+    setFormData(null);
     setShowCameraModal(false);
     
     // Show upload notification if enabled
     const pushNotifications = localStorage.getItem('pushNotifications');
     if (pushNotifications === null || pushNotifications === 'true') {
-      toast({
-        title: 'Image uploaded successfully!',
-        description: 'Your photo is ready for roasting. Hit Generate to create your roast!',
-      });
+        toast({
+          title: 'Image uploaded successfully!',
+          description: 'Your form is ready for analysis. Hit Generate to create your form guide!',
+        });
     }
   };
 
@@ -118,7 +118,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       // Add appropriate intro text for English only
       const introText = isFirstLine 
-        ? "Alright, let's roast this one! Here we go... "
+        ? "Let me guide you through filling this form! Here we go... "
         : "";
       const fullText = introText + text;
       
@@ -248,18 +248,18 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   };
 
-  const handleGenerateRoast = async () => {
+  const handleGenerateFormGuide = async () => {
     if (!isAuthenticated) {
       onAuthRequired();
       return;
     }
 
-    // Check if user has remaining credits (free trial gets 1 roast)
-    const roastsGenerated = profile?.roasts_generated || 0;
-    if (!isSubscribed && roastsGenerated >= 1) {
+    // Check if user has remaining credits (free trial gets 1 form guide)
+    const formsGenerated = profile?.forms_generated || 0;
+    if (!isSubscribed && formsGenerated >= 1) {
       toast({
         title: "Free trial limit reached",
-        description: "You've used your free roast. Upgrade to Premium for 49 monthly roasts!",
+        description: "You've used your free form guide. Upgrade to Premium for unlimited access!",
         variant: "destructive"
       });
       onSubscriptionRequired();
@@ -274,22 +274,22 @@ export const HomePage: React.FC<HomePageProps> = ({
       // Verify authentication before proceeding
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        throw new Error('Please log in to generate roasts');
+        throw new Error('Please log in to generate form guides');
       }
 
-      // Generate roast directly with image
+      // Generate form guide directly with image
 
-      // Clear previous roast data to ensure fresh generation
-      setRoastData(null);
+      // Clear previous form data to ensure fresh generation
+      setFormData(null);
       
       // Add randomization for unique roasts each time
       const randomSeed = Math.random().toString(36).substring(7);
       const timestamp = Date.now();
       
-      let roastResponse;
+      let formGuideResponse;
       try {
         console.log('Sending language to backend: english');
-        roastResponse = await supabase.functions.invoke('generate-roast', {
+        formGuideResponse = await supabase.functions.invoke('generate-form-guide', {
           body: { 
             imageBase64: selectedImage,
             language: 'english',
@@ -302,32 +302,32 @@ export const HomePage: React.FC<HomePageProps> = ({
           },
         });
 
-        console.log('Roast response:', roastResponse);
+        console.log('Form guide response:', formGuideResponse);
 
-        if (roastResponse.error) {
-          console.error('Roast generation error:', roastResponse.error);
-          throw new Error(`Roast generation failed: ${roastResponse.error.message}`);
+        if (formGuideResponse.error) {
+          console.error('Form guide generation error:', formGuideResponse.error);
+          throw new Error(`Form guide generation failed: ${formGuideResponse.error.message}`);
         }
       } catch (functionError: any) {
         console.error('Edge function invocation failed:', functionError);
         throw new Error(`Failed to send a request to the Edge Function: ${functionError.message || 'Network error'}`);
       }
 
-      if (!roastResponse.data?.success) {
-        throw new Error(roastResponse.data?.error || 'Failed to generate roast');
+      if (!formGuideResponse.data?.success) {
+        throw new Error(formGuideResponse.data?.error || 'Failed to generate form guide');
       }
 
-      const { roast, imageUrl, captions } = roastResponse.data;
+      const { formGuide, imageUrl, captions } = formGuideResponse.data;
 
-      if (!roast?.lines || roast.lines.length === 0) {
-        throw new Error('No roast lines generated. Please try again.');
+      if (!formGuide?.lines || formGuide.lines.length === 0) {
+        throw new Error('No form guide generated. Please try again.');
       }
 
       // Step 3: Generate TTS for each line using Google Gemini TTS
 
       let audioData: string[] = [];
       try {
-        const audioPromises = roast.lines.map((line: string, index: number) => {
+        const audioPromises = formGuide.lines.map((line: string, index: number) => {
           // Alternate between male and female voices for variety
           const voice = index % 2 === 0 ? 'male' : 'female';
           
@@ -345,49 +345,49 @@ export const HomePage: React.FC<HomePageProps> = ({
           .filter(Boolean);
 
         console.log('Google TTS audio generation completed:', { 
-          requested: roast.lines.length, 
+          requested: formGuide.lines.length, 
           generated: audioData.length 
         });
       } catch (audioError) {
-        console.error('Google TTS audio generation failed, showing roast without audio:', audioError);
-        // Continue without audio - don't block the roast display
+        console.error('Google TTS audio generation failed, showing form guide without audio:', audioError);
+        // Continue without audio - don't block the form guide display
       }
 
-      // Save roast to history
+      // Save form guide to history
       try {
         const { error: saveError } = await supabase
           .from('roasts')
           .insert({
-            roast_lines: roast.lines,
+            roast_lines: formGuide.lines,
             image_url: imageUrl,
             status: 'completed',
             user_id: session.user.id
           });
 
         if (saveError) {
-          console.error('Error saving roast to history:', saveError);
+          console.error('Error saving form guide to history:', saveError);
         }
       } catch (saveError) {
-        console.error('Error saving roast to history:', saveError);
+        console.error('Error saving form guide to history:', saveError);
       }
 
       // Don't add intro text here - it's handled in TTS
 
-      // Always show the roast, even if audio generation fails
-      setRoastData({
-        lines: roast.lines,
+      // Always show the form guide, even if audio generation fails
+      setFormData({
+        lines: formGuide.lines,
         audioData: audioData,
         captions: captions
       });
 
-      // Show roast completed notification if enabled
+      // Show form guide completed notification if enabled
       const pushNotifications = localStorage.getItem('pushNotifications');
-      const roastCompleted = localStorage.getItem('roastCompleted');
+      const formCompleted = localStorage.getItem('formCompleted');
       if ((pushNotifications === null || pushNotifications === 'true') && 
-          (roastCompleted === null || roastCompleted === 'true')) {
+          (formCompleted === null || formCompleted === 'true')) {
         toast({
-          title: 'Your roast is ready!',
-          description: 'Generated epic roast lines! Enjoy the burn!',
+          title: 'Your form guide is ready!',
+          description: 'Generated helpful form guidance! Ready to help you fill it out!',
         });
       }
 
@@ -395,19 +395,19 @@ export const HomePage: React.FC<HomePageProps> = ({
       const autoPlay = localStorage.getItem('autoPlay');
       const shouldAutoPlay = autoPlay === null || autoPlay === 'true'; // Default to true
 
-      if (roast.lines && shouldAutoPlay) {
-        console.log('Auto-playing Hindi roast lines with Google TTS');
+      if (formGuide.lines && shouldAutoPlay) {
+        console.log('Auto-playing form guide with Google TTS');
         
         // Add delay before starting auto-play
         setTimeout(async () => {
-          for (let i = 0; i < roast.lines.length; i++) {
-            const line = roast.lines[i];
-            console.log(`Auto-playing Hindi roast line ${i + 1}:`, line);
+          for (let i = 0; i < formGuide.lines.length; i++) {
+            const line = formGuide.lines[i];
+            console.log(`Auto-playing form guide line ${i + 1}:`, line);
             
             try {
               await handleTextToSpeech(line, i === 0);
               // Add delay between lines for dramatic effect
-              if (i < roast.lines.length - 1) {
+              if (i < formGuide.lines.length - 1) {
                 await new Promise(resolve => setTimeout(resolve, 2500));
               }
             } catch (ttsError) {
@@ -444,7 +444,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       }
       
       toast({
-        title: "🚫 Roast Failed!",
+        title: "🚫 Form Guide Failed!",
         description: errorMessage,
         variant: "destructive"
       });
@@ -453,8 +453,8 @@ export const HomePage: React.FC<HomePageProps> = ({
     }
   };
 
-  const handleDownloadRoast = () => {
-    if (!selectedImage || !roastData) return;
+  const handleDownloadFormGuide = () => {
+    if (!selectedImage || !formData) return;
     
     // Create canvas to combine image and captions
     const canvas = document.createElement('canvas');
@@ -471,7 +471,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       ctx.drawImage(img, 0, 0);
       
       // Add caption overlay
-      if (roastData.lines && roastData.lines.length > 0) {
+      if (formData.lines && formData.lines.length > 0) {
         const fontSize = Math.max(20, img.width / 25);
         ctx.font = `bold ${fontSize}px Arial`;
         ctx.textAlign = 'center';
@@ -480,8 +480,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         ctx.lineWidth = 3;
         
         // Add captions at bottom
-        const startY = img.height - (roastData.lines.length * fontSize * 1.2) - 20;
-        roastData.lines.forEach((line, index) => {
+        const startY = img.height - (formData.lines.length * fontSize * 1.2) - 20;
+        formData.lines.forEach((line, index) => {
           const y = startY + (index * fontSize * 1.2);
           ctx.strokeText(line, img.width / 2, y);
           ctx.fillText(line, img.width / 2, y);
@@ -529,9 +529,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <ImageViewer
                   src={selectedImage}
                   alt="Selected photo"
-                  roastLines={roastData?.lines}
-                  audioData={roastData?.audioData}
-                  captionsData={roastData?.captions}
+                  roastLines={formData?.lines}
+                  audioData={formData?.audioData}
+                  captionsData={formData?.captions}
                   onTextToSpeech={handleTextToSpeech}
                   onRemove={() => {
                     // Stop any ongoing speech synthesis
@@ -539,7 +539,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       window.speechSynthesis.cancel();
                     }
                     setSelectedImage(null);
-                    setRoastData(null);
+                    setFormData(null);
                   }}
                   className="w-full h-full"
                 />
@@ -549,10 +549,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <ImageIcon className="w-8 h-8 text-neon-primary" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Upload your vibe
+                    Upload your form
                   </h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Drop a selfie here or tap to browse
+                    Drop a form image here or tap to browse
                   </p>
                   
                   {/* Upload and Camera Buttons Inside the Box */}
@@ -564,7 +564,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       className="w-full flex items-center justify-center space-x-3"
                     >
                       <Upload className="w-5 h-5" />
-                      <span>Upload Image</span>
+                      <span>Upload Form</span>
                     </GlassButton>
                     
                     <GlassButton
@@ -574,7 +574,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       className="w-full flex items-center justify-center space-x-3"
                     >
                       <Camera className="w-5 h-5" />
-                      <span>Take Photo</span>
+                      <span>Take Photo of Form</span>
                     </GlassButton>
                   </div>
                 </div>
@@ -588,14 +588,14 @@ export const HomePage: React.FC<HomePageProps> = ({
         <GlassButton
           variant={selectedImage ? "premium" : "default"}
           size="xl"
-          onClick={handleGenerateRoast}
+          onClick={handleGenerateFormGuide}
           disabled={!selectedImage || isGenerating}
           className="w-full relative overflow-hidden"
         >
           <div className="flex items-center space-x-3">
             <Zap className={`w-6 h-6 ${isGenerating ? 'animate-pulse' : ''}`} />
             <span className="font-semibold">
-              {isGenerating ? 'Generating...' : 'Generate Roast'}
+              {isGenerating ? 'Generating...' : 'Generate Form Guide'}
             </span>
           </div>
           {isGenerating && (
@@ -603,22 +603,22 @@ export const HomePage: React.FC<HomePageProps> = ({
           )}
         </GlassButton>
 
-        {/* Download Button - Only show if roast is generated */}
-        {roastData && (
+        {/* Download Button - Only show if form guide is generated */}
+        {formData && (
           <GlassButton
             variant="secondary"
             size="lg"
-            onClick={handleDownloadRoast}
+            onClick={handleDownloadFormGuide}
             className="w-full flex items-center space-x-3"
           >
             <Download className="w-5 h-5" />
-            <span className="font-semibold">Download Roast</span>
+            <span className="font-semibold">Download Form Guide</span>
           </GlassButton>
         )}
 
         {!selectedImage && (
           <p className="text-center text-sm text-muted-foreground">
-            Upload or snap to unlock your roast potential
+            Upload or snap to upload your form for AI guidance
           </p>
         )}
 
