@@ -117,10 +117,10 @@ export const HomePage: React.FC<HomePageProps> = ({
       }
 
       // Add appropriate intro text for English only
-      const introText = isFirstLine 
-        ? "Let me guide you through filling this form! Here we go... "
-        : "";
-      const fullText = introText + text;
+        const introText = isFirstLine 
+          ? "Let me guide you through filling this form! Here we go... "
+          : "";
+        const fullText = introText + text;
       
       console.log('TTS Text:', { isFirstLine, introText, text, fullText });
       
